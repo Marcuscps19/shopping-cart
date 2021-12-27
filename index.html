@@ -4,21 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <title>Shopping Cart</title>
     <link rel="stylesheet" href="style.css" />
     <script src="script.js"></script>
   </head>
-
+  <header>
+    <nav>
+      <h1>Shopping Cart</h1>
+      <div>
+        <input id="input__search" type="text" placeholder="Digite o que você procura aqui.." />
+        <button id="btn__search" type="button">Pesquisar</button>
+      </div>
+    </nav>
+  </header>
   <body>
     <section class="container">
       <section class="items"></section>
       <section class="cart">
         <span class="cart__title">Carrinho de compras</span>
-        <button class="empty-cart">Esvaziar carrinho</button>
         <ol class="cart__items">
         </ol>
-        <span>Total Price:</span>
-        <span class="total-price">0</span>
+        <div class="ctn_total-price">
+          <span>Total Price: R$</span>
+          <span class="total-price"></span>
+        </div>
+        <button class="empty-cart">Esvaziar carrinho</button>
       </section>
     </section>
   </body>
