@@ -51,33 +51,33 @@ const fetchData = async (uri) =>
       });
   });
 
-// function getSkuFromProductItem(item) {
-//   return item.querySelector('span.item__sku').innerText;
-// }
-
 const saveToLocalStorage = (key, value) => {
   localStorage.setItem(key, value);
 };
 
 const loadToLocalStorage = (key, itemToAppend) => {
   const item = localStorage.getItem(key);
-  const appendItem = itemToAppend;
-  appendItem.innerHTML = item;
+  if(item === '0'){
+    itemToAppend.innerHTML = parseInt(item).toFixed('2');
+  } else {
+    itemToAppend.innerHTML = item;
+  }
 };
 
-const addPrice = async (price) => {
-  const totalPrice = document.querySelector('.total-price'); 
+const addPrice = (price) => {
+  const totalPrice = document.querySelector('.total-price');
   const value = parseFloat(totalPrice.innerText);
-  totalPrice.innerText = await (value + price).toFixed(2);
+  totalPrice.innerText = (value + price).toFixed(2);
   if (parseFloat(totalPrice.innerText) % 1 === 0) {
-    totalPrice.innerText = await (value + price).toFixed();
+    totalPrice.innerText = (value + price).toFixed(2);
   }
+  saveToLocalStorage('totalPrice', totalPrice.innerText);
 };
 
 const removePrice = (price) => {
   const totalPrice = document.querySelector('.total-price'); 
   const value = parseFloat(totalPrice.innerText);
-  totalPrice.innerText = (value - price);
+  totalPrice.innerText = (value - price).toFixed(2);
 };
 
 function cartItemClickListener(event) {
@@ -87,6 +87,8 @@ function cartItemClickListener(event) {
   removePrice(price);
   parent.removeChild(parentChildToRemove);  
   saveToLocalStorage('cartList', parent.innerHTML);
+  const totalPrice = document.querySelector('.total-price');
+  saveToLocalStorage('totalPrice', totalPrice.innerText);
 }
 
 const getCart = () => document.querySelector('.cart__items');
@@ -119,14 +121,17 @@ const fetchItem = async (item) => {
 };
 
 const clearCart = () => {
+  const totalPrice = document.querySelector('.total-price'); 
   const ol = getCart();
   ol.innerHTML = '';
   localStorage.removeItem('cartList');
+  totalPrice.innerText = '0.00';
+  localStorage.setItem('totalPrice', 0.00);
 };
 
 const loading = (boolean) => {
   const container = document.querySelector('body');
-  if (boolean === true) {
+  if (boolean) {
     const spanLoading = document.createElement('span');
     spanLoading.className = 'loading';
     spanLoading.innerHTML = 'loading...';
@@ -135,23 +140,42 @@ const loading = (boolean) => {
     container.removeChild(container.lastChild);
   }
 };
+
+function createAddListeners() {
+  const itemAdd = document.querySelectorAll('.item__add');
+  itemAdd.forEach((item) => item.addEventListener('click', fetchItem));
+}
+
+async function loadProducts(uri) {
+  const olCart = getCart();
+  const totalPrice = document.querySelector('.total-price');
+  loadToLocalStorage('cartList', olCart);
+  loadToLocalStorage('totalPrice', totalPrice);
+  olCart.childNodes.forEach((node) => node.addEventListener('click', cartItemClickListener));
+  loading(true);
+    const data = await fetchData(uri);
+    createElements(data.results);
+  loading(false);
+    createAddListeners();
+}
+
+function getSearchedText() {
+  const items = document.querySelector('.items');
+  items.innerHTML = '';
+  const searchedText = document.getElementById('input__search').value;
+  const uriData = `https://api.mercadolibre.com/sites/MLB/search?q=${searchedText}`;
+  loadProducts(uriData);
+}
+
+
 window.onload = async function onload() {
   try {
-    const olCart = getCart();
-    loadToLocalStorage('cartList', olCart);
-    olCart.childNodes.forEach((node) => node.addEventListener('click', cartItemClickListener));
-    const uriData = 'https://api.mercadolibre.com/sites/MLB/search?q=computador';
-    loading(true);
-    const data = await fetchData(uriData);
-    loading(false);
-    createElements(data.results);
-    const itemAdd = document.querySelectorAll('.item__add');
-    itemAdd.forEach((item) => item.addEventListener('click', fetchItem));
+    loadProducts(`https://api.mercadolibre.com/sites/MLB/search?q=${undefined}`);
+    const btnSearch = document.getElementById('btn__search');
+    btnSearch.addEventListener('click', getSearchedText);
     const emptyCart = document.querySelector('.empty-cart');
     emptyCart.addEventListener('click', clearCart);
   } catch (error) {
     console.log(error);
   }
 };
-
-/* Cada vez que se adicionar um item ao carrinho de compras, será necessário somar seus valores e apresentá-los na página principal do projeto. Não queremos que essa soma, no entanto, impacte no carregamento da página. Devemos, portanto, fazer essa soma de forma *assíncrona*. Use `async/await` para fazer isso. O elemento que tem como filho o preço total dos itens do carrinho deve ter, **obrigatóriamente**, a classe `total-price`. */
