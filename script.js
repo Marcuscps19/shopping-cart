@@ -57,10 +57,13 @@ const saveToLocalStorage = (key, value) => {
 
 const loadToLocalStorage = (key, itemToAppend) => {
   const item = localStorage.getItem(key);
-  if(item === '0'){
-    itemToAppend.innerHTML = parseInt(item).toFixed('2');
-  } else {
-    itemToAppend.innerHTML = item;
+  if (item) {
+    if(item === '0'){
+      console.log(item);
+      itemToAppend.innerHTML = parseInt(item).toFixed('2');
+    } else {
+      itemToAppend.innerHTML = item;
+    }
   }
 };
 
