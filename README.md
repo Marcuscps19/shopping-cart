@@ -41,6 +41,8 @@ npm install
 ### Clique com o botão direito no arquivo index.html
 - Selecione a opção Open with Live Server
 - Espere carregar a página no navegador
-- **Diminua a tela do navegador para ver o efeito do media query**
+- **Diminua a tela do navegador para ver o efeito do media query ou baixe a extensão (Responsive Viewer)[https://chrome.google.com/webstore/detail/responsive-viewer/inmopeiepgfljkpkidclfgbgbmfcennb]**
+
+Para excluir um item do carrinho, basta clicar em cima dele.
 
 [Pull Request](https://github.com/tryber/sd-010-a-project-shopping-cart/pull/42) do desafio.
